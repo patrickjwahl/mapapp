@@ -1,0 +1,118 @@
+html{
+  height: 100%;
+}
+
+body {
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin: 0;
+  font-family: 'Ubuntu', sans-serif;
+  height: 100%;
+}
+
+#sidebar {
+  position: absolute;
+  width: 15%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  left: -18%;
+  margin-left: 1%;
+  background-color: rgba(10, 10, 10, 0.8);
+  border-radius: 5px;
+  border: 1px solid black;
+  color: lightblue;
+}
+
+#sidebar input {
+  margin-left: 5%;
+  margin-right: 5%;
+  width: 90%;
+}
+
+#sidebar table {
+  width: 90%;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+#sidebar img {
+  max-width: 28%;
+  margin-left: 4%;
+  float: left;
+  display: block;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-bottom: 8px;
+}
+
+#show_sidebar, #close_sidebar {
+  margin-left: 1%;
+  margin-top: 8px;
+  font-size: 20px;
+}
+
+.mapicon {
+  position: absolute;
+  z-index: 12;
+  width: 2%;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+
+.btn {
+  margin: 5px;
+  position: relative;
+  border: 1px solid blue;
+  background-color: white;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+  z-index: 6;
+}
+
+.btn:hover {
+  background-color: lightblue;
+}
+
+.info_entry {
+  background-color: lightblue;
+  position: absolute;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid black;
+  z-index: 50
+}
+
+.info_entry label {
+  float: left;
+  margin-bottom: 1px;
+  display: block;
+}
+
+.info_entry input[type=text] {
+  width: 100%;
+  margin-bottom: 7px;
+  box-sizing: border-box;
+  padding: 6px;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+
+.info_entry input[type=button] {
+  border: 1px solid blue;
+  background-color: white;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+  float: right;
+}
+
+.info_entry input[type=button]:hover {
+  background-color: lightblue;
+}
+
+p {
+  margin: 7px;
+}
