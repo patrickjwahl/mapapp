@@ -10,9 +10,13 @@ body {
   height: 100%;
 }
 
+input {
+  margin-bottom: 3px;
+}
+
 #sidebar {
   position: absolute;
-  width: 15%;
+  width: 10%;
   padding-top: 5px;
   padding-bottom: 5px;
   left: -18%;
@@ -36,13 +40,18 @@ body {
 }
 
 #sidebar img {
-  max-width: 28%;
-  margin-left: 4%;
+  max-width: 70%;
+  margin-left: 15%;
   float: left;
   display: block;
   cursor: pointer;
   border-radius: 5px;
   margin-bottom: 8px;
+}
+
+#sidebar img:hover {
+  border: 3px solid lightgreen;
+  margin-bottom: 2px;
 }
 
 #show_sidebar, #close_sidebar {
@@ -79,10 +88,48 @@ body {
   background-color: lightblue;
   position: absolute;
   display: inline-block;
-  padding: 10px;
+  padding: 7px;
   border-radius: 5px;
   border: 1px solid black;
-  z-index: 50
+  z-index: 50;
+}
+
+#key {
+  top: 5px;
+  left: 89%;
+  width: 10%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  //height: 15%;
+  //width: 20%;
+  background-color: white;
+  position: absolute;
+  display: inline-block;
+  border-radius: 5px;
+  border: 1px solid black;
+  z-index: 40;
+}
+
+#key input {
+  margin-top: 25%;
+  margin-bottom: 35%;
+}
+
+#key img {
+  max-width: 51%;
+  margin: 8%;
+  float: left;
+  display: block;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 10px;
+}
+
+h3 {
+  position: absolute;
+  margin-top: 4px;
+  margin-left: 4px;
+  margin-bottom: 5%;
 }
 
 .info_entry label {

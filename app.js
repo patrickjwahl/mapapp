@@ -9,11 +9,6 @@ $(document).ready(function() {
   $(".info_entry").hide();
 })
 
-$(document).on('click', "#highlight", function(evt) {
-  document.body.style.backgroundImage = "url('https://s3.postimg.org/maatu7dib/mit_campus_buildings_1_and_2_highlight.png')";
-
-});
-
 $(document).on('click', "#show_sidebar", function(evt) {
   $("#sidebar").animate({left: 0}, 100);
   setTimeout(function() {
@@ -21,6 +16,26 @@ $(document).on('click', "#show_sidebar", function(evt) {
     $("#show_sidebar").attr("id", "close_sidebar");
   }, 100);
   
+});
+
+$(document).on('click', '#delete', function(evt) {
+	$("#iden").remove();
+});
+
+$(document).on('click', '#info_check', function(evt) {
+	if ($("#info_check").prop("checked")) {
+  	$(".info_clone").show();
+  } else {
+    $(".info_clone").hide();
+  }
+});
+
+$(document).on('click', '#restroom_check', function(evt) {
+	if ($("#restroom_check").prop("checked")) {
+  	$(".restroom_clone").show();
+  } else {
+    $(".restroom_clone").hide();
+  }
 });
 
 $(document).on('click', "#close_sidebar", function(evt) {
@@ -33,9 +48,10 @@ $(document).on('click', "#close_sidebar", function(evt) {
 
 $(document).on('mousedown', '.icon', function(evt) {
   $(this).attr('draggable', 'false');
-  var iden = "ic" + currIcon;
+  var iden = $(this).attr("id") + currIcon;
+  var cl = $(this).attr("id") + "_clone";
   var source = $(this).attr('src');
-  var newImg = $("<img>", {id: iden, src: source, class: "mapicon", draggable: "false"});
+  var newImg = $("<img>", {id: iden, src: source, class: cl + " mapicon", draggable: "false"});
   $("body").append(newImg);
   var cursorX = evt.pageX;
   var cursorY = evt.pageY;
@@ -79,14 +95,20 @@ $(document).on('mouseup', '.mapicon', function(evt) {
     $(this).remove();
   }
   evt.stopPropagation();
+  //TODO: Generate a new info entry every time an icon is added so that they all have their own dedicated entry
+  /*var info_entry = document.createElement("div");
+  var del = document.createElement("input");
+  var name_label = document.createElement("label");
+  var name_text = document.createElement("input");
+  var address_label = document.createElement("label");
+  var address_text = document.createElement("input");
+  var save = document.createElement("input");*/
 });
 
 $(document).on('mouseup', '#sidebar, .info_entry', function(evt) {
-  stopPropagation();
+  evt.stopPropagation();
 });
 
 $(document).on('mouseup', '.bkg', function(evt) {
   $('.info_entry').hide();
 });
-
-
