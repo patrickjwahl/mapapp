@@ -2,47 +2,110 @@
 <html>
 <head>
 <link rel="stylesheet" href="layout.css">
-<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Passion+One:400,700,900" rel="stylesheet">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="app.js"></script>
+<script src='app.js'></script>
+</head>
 
+<body>
 
-<body class="bkg" style="background-image:url(https://s10.postimg.org/4bby3l8fd/mit_campus.png)">
-<!--
-<input type="file" name="filename" accept="image/gif, image/jpeg, image/png">
--->
-<input class="btn" id="show_sidebar" type="button" value=">>>">
-<div id="sidebar">
-<!--
-<input class="btn" id="highlight" type="button" value="Highlight Buildings">
-<input class="btn" id="save" type="button" value="Save">
--->
-<p>Icons:</p>
+<div id='welcome' style='display: none'>
 
-<img src="https://s13.postimg.org/rtyfxbsvr/info_icon.png" class="icon" id="info" alt="info">
-<img src="http://i.imgur.com/0S1StJM.png" class="icon" id="restroom" alt="info">
+	<div id='spacer'></div>
+
+	<div id="home-top-bar">
+		<div id='top-left'></div>
+		<div id='top-green'></div>
+		<div id='top-blue'></div>
+		<img alt='map logo' src='maplogo.png'>
+		<h1>Map</h1>
+		<h1>App</h1>
+	</div>
+
+	<div id="home-bottom-bar">
+		<h3>Load an existing map, or upload an image to create a new one.</h3>
+		<div id='buttons'>
+			<input type='button' class='home-button' id='load-button' value="Load Existing Map">
+			<input type="file" id='imgup' name="imgupload" accept="image/gif, image/jpeg, image/png" hidden/>
+			<input type='button' class='home-button' id='new-button' value="Create New Map">
+		</div>
+	</div>
 
 </div>
 
-<div id="info_entry" class="info_entry">
-<input id="delete" type="button" value="X">
-<label for="name">Name</label>
-<input type="text" id="name">
-<br/>
-<label for="address">Address</label>
-<input type="text" id="address">
-<br/>
-<input id="save" type="button" value="Save">
-</div>
+<div id='mapapp'>
 
-<div id="key">
-<h3><u>Key:</u></h3>
-<br/>
-<img src="https://s13.postimg.org/rtyfxbsvr/info_icon.png" class="icon" id="info" alt="info">
-<input type="checkbox" id="info_check" checked>
-<img src="http://i.imgur.com/0S1StJM.png" class="icon" id="restroom" alt="info">
-<input type="checkbox" id="restroom_check" checked>
-</div>
+	<div id='titlebar'>
+		<img alt='map logo' src='maplogo.png'>
+		<h2>MapApp</h2>
+		<input type='button' class='titlebar-button' id='tb-save-button' value="Save">
+		<input type='button' class='titlebar-button' id='tb-load-button' value="Load">
+		<input type='button' class='titlebar-button' id='tb-new-button' value="New">
+	</div>
 
+	<div id='content'>
+
+		<div id='sidebar'>
+			<span>Drag icons to add:</span>
+		</div>
+
+		<div id='map-container'>
+			<div id='zoom'>
+				<input type='button' id='zoomin' value='+'>
+				<input type='button' id='zoomout' value='-'>
+			</div>
+			<img src='https://s10.postimg.org/4bby3l8fd/mit_campus.png' alt='map' id='map' draggable='false'>
+		</div>
+
+		<div id='locations'>
+			<h3>Locations</h3>
+			<div id='key'>
+				
+			</div>
+			<div id='loclist'>
+
+			</div>
+		</div>
+
+		<div id="info_entry">
+			<input id='ex' type="button" value="&times;">
+			<div id="info_boxes">
+				<label for="name">Name</label>
+				<input type="text" id="name" placeholder="untitled">
+				<label for="address">Address</label>
+				<input type="text" id="address">
+				<label for="desc">Description</label>
+				<textarea id="desc" rows='5'></textarea>
+			</div>
+			<input id="save" type="button" value="Save">
+			<input id="move" type="button" value="Move">
+			<input id="delete" type="button" value="Delete">
+		</div>
+
+		<div id='information'>
+			Hello
+		</div>
+
+	</div>
+	<!--
+	<div id="sidebar">
+		<p>Icons:</p>
+
+		<img src="https://s13.postimg.org/rtyfxbsvr/info_icon.png" class="icon" id="info" alt="info">
+		<img src="http://i.imgur.com/0S1StJM.png" class="icon" id="restroom" alt="info">
+
+	</div>
+
+	<div id="key">
+		<h3><u>Key:</u></h3>
+		<br/>
+		<img src="https://s13.postimg.org/rtyfxbsvr/info_icon.png" class="icon" id="info" alt="info">
+		<input type="checkbox" id="info_check" checked>
+		<img src="http://i.imgur.com/0S1StJM.png" class="icon" id="restroom" alt="info">
+		<input type="checkbox" id="restroom_check" checked>
+	</div>-->
+</div>
 </body>
 </html>
+
