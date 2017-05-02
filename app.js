@@ -12,16 +12,25 @@ var oldX = 0;
 var oldY = 0;
 var moveClicked = false;
 var gType = '';
-var zoomLevel = 0;
+var zoomLevel = 1;
 var mouseMap = false;
 var oMouseX, oMouseY, oMapLeft, oMapTop;
 var locClicked = false;
 var checked = {};
+var highlighted = null;
+var mouseWheeled = false;
 
 var icons = {
   "info": ["https://s13.postimg.org/rtyfxbsvr/info_icon.png", "Information"],
   "restroom": ["http://i.imgur.com/0S1StJM.png", "Restrooms"],
-  "random": ["rando.jpg", "Random"]
+  "random": ["rando.jpg", "Random"],
+  "upset": ["upsetemoji.png", "Side Eyes"],
+  "money": ['money.png', "Bills Bills Bills!"],
+  "nerd": ['nerd.png', "Beta"],
+  "poop": ['poop.jpg', "Excretion"],
+  "thinkn": ['thinkin.png', "Something about this isn't right"],
+  "halo": ['halo.png', "Angle"],
+  "wink": ['wink.png', 'Suggestive']
 }
 
 $(document).ready(function() {
@@ -48,14 +57,117 @@ $(document).on('change', '#imgup', function(evt) {
 
   reader.onloadend = function() {
     if (state == 0) {
-      $('#welcome').slideUp(500, function() {$('#mapapp').slideDown(500);});
+      $('#welcome').slideUp(500, function() {
+        $('#mapapp').slideDown(500, function() {
+          var imag = new Image(); //from http://stackoverflow.com/questions/623172/how-to-get-image-size-height-width-using-javascript
+          imag.onload = function() {
+            var cont = $('#map-container');
+            var rent = cont.parent();
+            cont.css({
+              width: '74%',
+              height: '90%',
+            });
+            var contRatio = cont.width() / cont.height();
+            var ratio = this.width / this.height;
+            if (ratio < contRatio) {
+              var newHeight = 90;
+              var newWidth = newHeight * ratio * (rent.height() / rent.width());
+              var newLeft = 46 - (newWidth / 2);
+              var newTop = 5;
+              cont.css({
+                width: newWidth + '%',
+                height: newHeight + '%',
+                left: newLeft + '%',
+                top: newTop + '%'
+              });
+              $('#sidebar').css('left', (newLeft - 8) + '%');
+              $('#locations').css('left', (newLeft + newWidth + 1) + '%');
+            } else {
+              var newWidth = 74;
+              var newHeight = newWidth * (1/ratio) * (rent.width() / rent.height());
+              var newLeft = 9;
+              var newTop = 50 - (newHeight / 2);
+              cont.css({
+                width: newWidth + '%',
+                height: newHeight + '%',
+                left: newLeft + '%',
+                top: newTop + '%'
+              });
+              $('#sidebar').css('left', '1%');
+              $('#locations').css('left', '84%');
+            }
+        };
+        imag.src = reader.result;
+        $('#map').css({
+          height: '100%',
+          width: '100%',
+          top: 0,
+          left: 0
+        });
+        });
+      });
       $('#map').attr('src', reader.result);
+      zoomLevel = 1;
       locations = {};
       state = 1;
     } else {
-      $('#map').fadeOut(500, function() {$('#map').attr('src', reader.result); $('#map').fadeIn(500);});
+      $('#map').fadeOut(500, function() {
+        $('#map').attr('src', reader.result);
+        var imag = new Image(); //from http://stackoverflow.com/questions/623172/how-to-get-image-size-height-width-using-javascript
+        imag.onload = function() {
+          var cont = $('#map-container');
+          var rent = cont.parent();
+          cont.css({
+            width: '74%',
+            height: '90%',
+          });
+          var contRatio = cont.width() / cont.height();
+          var ratio = this.width / this.height;
+          if (ratio < contRatio) {
+            var newHeight = 90;
+            var newWidth = newHeight * ratio * (rent.height() / rent.width());
+            var newLeft = 46 - (newWidth / 2);
+            var newTop = 5;
+            cont.css({
+              width: newWidth + '%',
+              height: newHeight + '%',
+              left: newLeft + '%',
+              top: newTop + '%'
+            });
+            $('#sidebar').css('left', (newLeft - 8) + '%');
+            $('#locations').css('left', (newLeft + newWidth + 1) + '%');
+          } else {
+            var newWidth = 74;
+            var newHeight = newWidth * (1/ratio) * (rent.width() / rent.height());
+            var newLeft = 9;
+            var newTop = 50 - (newHeight / 2);
+            cont.css({
+              width: newWidth + '%',
+              height: newHeight + '%',
+              left: newLeft + '%',
+              top: newTop + '%'
+            });
+            $('#sidebar').css('left', '1%');
+            $('#locations').css('left', '84%');
+          }
+        };
+        imag.src = reader.result;
+        $('#map').css({
+          height: '100%',
+          width: '100%',
+          top: 0,
+          left: 0
+        });
+        zoomLevel = 1;
+        $('#map').fadeIn(500);
+      });
       locations = {};
+      var ex = $('#ex2');
+      ex.hide();
+      ex.remove();
+      $('body').append(ex);
       updateLocations();
+      currIcon = 0;
       $('.mapicon').remove();
     }
   }
@@ -117,7 +229,11 @@ $(document).on('mouseenter', '.placed', function(evt) {
 
   var lo = $('#lo' + $(this).attr('id').substring(2));
   lo.css('box-shadow', '0 0 10px slategray');
-  $('#locations').scrollTop(lo.offset().top);
+  if (highlighted != lo.attr('id')) {
+    highlighted = lo.attr('id');
+    $('#locations').scrollTop(lo.position().top);
+  }
+  
 
   var t = setTimeout(function() {
     that.animate({
@@ -182,8 +298,8 @@ $(document).on('mouseup', '.mapicon', function(evt) {
         var loc = {
           num: currIcon,
           type: gType,
-          leftr: ($(this).position().left + halfIconSize - $('#map-container').offset().left - $('#map').position().left) / $('#map').width(),
-          topr: ($(this).position().top + halfIconSize - $('#map-container').offset().top - $('#map').position().top) / $('#map').height(),
+          leftr: ($(this).position().left + halfIconSize - 2 - $('#map-container').offset().left - $('#map').position().left) / $('#map').width(),
+          topr: ($(this).position().top + halfIconSize - 2 - $('#map-container').offset().top - $('#map').position().top) / $('#map').height(),
           name: 'Location ' + currIcon,
           address: '',
           desc: ''
@@ -202,6 +318,7 @@ $(document).on('mouseup', '.mapicon', function(evt) {
 
         $("#info_entry").show();
         $('#name').focus();
+        $('#name').select();
 
         $(this).addClass('placed');
         currIcon++;
@@ -255,6 +372,7 @@ $(document).on('mouseup', '.mapicon', function(evt) {
     $('#desc').val(loc.desc);
     $("#info_entry").show();
     $('#name').focus();
+    $('#name').select();
   }
   evt.stopPropagation();  
   $('#zoom').show();
@@ -266,6 +384,11 @@ $(document).on('mouseup', '.mapicon', function(evt) {
   var address_label = document.createElement("label");
   var address_text = document.createElement("input");
   var save = document.createElement("input");*/
+});
+
+$(document).on('keydown', '#info_entry textarea', function(evt) {
+  if (evt.which == 13)
+    evt.preventDefault();
 });
 
 $(document).on('keyup', '#info_entry input[type=text], #info_entry textarea', function(evt) {
@@ -295,7 +418,23 @@ $(document).on('click', '#delete', function(evt) {
   clickedIcon.remove();
 });
 
+$(document).on('click', '#ex2', function(evt) {
+  var ide = parseInt($(this).parent().attr('id').substring(2));
+  delete locations[ide];
+  $(this).hide();
+  $(this).remove();
+  $('body').append($(this));
+  updateLocations();
+  $('#info_entry').hide();
+  $('#ic' + ide).remove();
+  evt.stopPropagation();
+});
+
 function updateLocations() {
+  var ex = $('#ex2');
+  ex.hide();
+  ex.remove();
+  $('body').append(ex);
   var used = {};
   $('#loclist').html('');
   $('#key').html('');
@@ -309,6 +448,7 @@ function updateLocations() {
       elt.append('<label for="cb' + loc.type + '"><img src="' + icons[loc.type][0] + '" class="keyimg" alt="icon"></label>');
       $('#key').append(elt);
     }
+    if (!checked[loc.type]) continue; 
     var elt = $('<div>', {class: 'loc', id: 'lo' + i});
     var info = $('<div>', {class: 'locinfo'});
     info.append('<h5>'+loc.name+'</h5>');
@@ -332,22 +472,45 @@ $(document).on('click', '.loc', function(evt) {
   ic.css({
     width: '25px',
     left: oldX,
-    top: oldY
+    top: oldY,
+    border: '1px solid black'
   });
   locClicked = true;
+  var newLeft = map.position().left - 1;
+  var newTop = map.position().top - 1;
+  var redr = true;
   if (ic.position().left + 25 > cont.width()) {
-    map.css('left', map.position().left - (ic.position().left + 25 - cont.width()));
+    newLeft = map.position().left - (ic.position().left + 25 - cont.width());
+    map.animate({left: newLeft}, 200);
+    setTimeout(function() {showInfoEntry(ic)}, 300);
+    redr = false;
   }
   if (ic.position().left < 0) {
-    map.css('left', map.position().left - (ic.position().left));
+    newLeft = map.position().left - (ic.position().left);
+    map.animate({left: newLeft}, 200);
+    setTimeout(function() {showInfoEntry(ic)}, 300);
+    redr = false;
   } 
   if (ic.position().top < 0) {
-    map.css('top', map.position().top - (ic.position().top));
+    newTop = map.position().top - (ic.position().top);
+    map.animate({top: newTop}, 200);
+    setTimeout(function() {showInfoEntry(ic)}, 300);
+    redr = false;
   } 
   if (ic.position().top + 25 > cont.height()) {
-    map.css('top', map.position().top - (ic.position().top + 25 - cont.height()));
+    newTop = map.position().top - (ic.position().top + 25 - cont.height());
+    map.animate({top: newTop}, 200);
+    setTimeout(function() {showInfoEntry(ic)}, 300);
+    redr= false;
+  } 
+  if (redr) {
+    showInfoEntry(ic);
+  } else {
+    redrawIcons(true, map.width(), map.height(), newLeft, newTop);
   }
-  redrawIcons();
+});
+
+function showInfoEntry(ic) {
   var tb = $("#titlebar");
   $("#info_entry").css({
     left: ic.offset().left + ic.width() - 3,
@@ -359,25 +522,36 @@ $(document).on('click', '.loc', function(evt) {
   $('#desc').val(loc.desc);
   $("#info_entry").show();
   $('#name').focus();
-});
+  $('#name').select();
+}
 
 $(document).on('mouseenter', '.loc', function(evt) {
+  if (moveClicked) return;
+  var ex = $('#ex2');
+  ex.remove();
+  $(this).append(ex);
+  ex.show();
   $(this).css('box-shadow', '0 0 10px slategray');
   var ic = $('#ic' + $(this).attr('id').substring(2));
   oldX = ic.position().left;
   oldY = ic.position().top;
   ic.css({
-    width: ic.width() + 10,
-    left: ic.position().left - 5,
-    top: ic.position().top - 5
+    border: '3px solid black',
+    width: ic.width() + 20,
+    left: ic.position().left - 13,
+    top: ic.position().top - 13
   });
 });
 
 $(document).on('mouseleave', '.loc', function(evt) {
+  if (moveClicked) return;
+  var ex = $('#ex2');
+  ex.hide();
   $(this).css('box-shadow', 'none');
   var ic = $('#ic' + $(this).attr('id').substring(2));
   if (!locClicked) {
     ic.css({
+      border: '1px solid black',
       width: '25px',
       left: oldX,
       top: oldY
@@ -389,45 +563,79 @@ $(document).on('mouseleave', '.loc', function(evt) {
 $(document).on('keyup', '#info_entry', function(evt) {
   if (evt.which == 27) {
     $('#ex').click();
-  } 
+  }
 });
 
 $(window).on('resize', function() {
+  $('#map').css({
+    width: '100%',
+    height: '100%',
+    left: 0,
+    top: 0
+  });
+  zoomLevel = 1;
   redrawIcons();
 });
 
-function redrawIcons() {
-  $('.mapicon').each(function() {
-    var i = parseInt($(this).attr('id').substring(2));
-    $(this).css({
-      left: locations[i].leftr * $('#map').width() + $('#map').position().left - halfIconSize - 2,
-      top: locations[i].topr * $('#map').height() + $('#map').position().top - halfIconSize - 2
+function redrawIcons(anim=false, newWidth=-1, newHeight, newLeft, newTop) {
+
+  if (newWidth == -1) {
+    $('.mapicon').each(function() {
+      var i = parseInt($(this).attr('id').substring(2));
+      if (anim) {
+        $(this).animate({
+          left: locations[i].leftr * $('#map').width() + $('#map').position().left - halfIconSize - 2,
+          top: locations[i].topr * $('#map').height() + $('#map').position().top - halfIconSize - 2
+        }, 200);
+      } else {
+        $(this).css({
+          left: locations[i].leftr * $('#map').width() + $('#map').position().left - halfIconSize - 2,
+          top: locations[i].topr * $('#map').height() + $('#map').position().top - halfIconSize - 2
+        });
+      }
     });
-  });
+  } else {
+    $('.mapicon').each(function() {
+      var i = parseInt($(this).attr('id').substring(2));
+      if (anim) {
+        $(this).animate({
+          left: locations[i].leftr * newWidth + newLeft - halfIconSize - 2,
+          top: locations[i].topr * newHeight + newTop - halfIconSize - 2
+        }, 200);
+      } else {
+        $(this).css({
+          left: locations[i].leftr * newWidth + newLeft - halfIconSize - 2,
+          top: locations[i].topr * newHeight + newTop - halfIconSize - 2
+        });
+      }
+    });
+  }
 }
 
 $(document).on('mouseenter', '.icon', function(evt) {
+  if (moveClicked) return;
+  $('#information').text(icons[$(this).attr('id')][1]);
   $('#information').css({
     top: evt.pageY - $('#titlebar').height(),
-    left: evt.pageX + 10
+    left: evt.pageX - $('#information').width() - 10
   });
-  $('#information').text(icons[$(this).attr('id')][1]);
   $('#information').show();
 });
 
 $(document).on('mouseenter', '.keyitem img', function(evt) {
+  if (moveClicked) return;
+  $('#information').text(icons[$(this).parent().attr('for').substring(2)][1]);
   $('#information').css({
     top: evt.pageY - $('#titlebar').height(),
-    left: evt.pageX + 10
+    left: evt.pageX - $('#information').width() - 10
   });
-  $('#information').text(icons[$(this).parent().attr('for').substring(2)][1]);
   $('#information').show();
 });
 
 $(document).on('mousemove', '.icon, .keyitem img', function(evt) {
   $('#information').css({
     top: evt.pageY - $('#titlebar').height(),
-    left: evt.pageX + 10
+    left: evt.pageX - $('#information').width() - 10
   });
 });
 
@@ -441,27 +649,105 @@ $(document).on('click', '#zoomin', function(evt) {
   if (zoomLevel == 8) return;
   zoomLevel++;
   $('#info_entry').hide();
+  var cont = $('#map-container');
   var ratio = map.height() / map.width();
-  map.css('width', map.width() + 200);
-  map.css('left', -100 * zoomLevel);
-  map.css('height', map.width() * ratio);
-  map.css('top', -100 * ratio * zoomLevel);
-  redrawIcons();
+  var leftRatio = (cont.width() / 2 - map.position().left) / map.width();
+  var topRatio = (cont.height() / 2 - map.position().top) / map.height();
+  var newHeight = map.height() * 2;
+  var newWidth = map.width() * 2;
+  var newLeft = map.position().left - map.width()*leftRatio;
+  var newTop = map.position().top - map.height()*topRatio;
+  map.animate({
+    width: newWidth,
+    left: newLeft,
+    height: newHeight,
+    top: newTop
+  }, 200);
+  redrawIcons(true, newWidth, newHeight, newLeft, newTop);
+
+  
  });
 
 $(document).on('click', '#zoomout', function(evt) {
   var map = $('#map');
-  if (zoomLevel <= 0) return;
-  zoomLevel--;
+  if (zoomLevel == 1) return;
   $('#info_entry').hide();
   var cont = $('#map-container');
   var ratio = map.height() / map.width();
-  map.css('width', map.width() - 200);
-  map.css('left', -100 * zoomLevel);
-  map.css('height', map.width() * ratio);
-  map.css('top', -100 * zoomLevel * ratio);
-  redrawIcons();
+  var leftRatio = (cont.width() / 2 - map.position().left) / map.width();
+  var topRatio = (cont.height() / 2 - map.position().top) / map.height();
+  var newHeight = map.height() / 2;
+  var newWidth = map.width() / 2;
+  var newLeft = Math.max(Math.min(map.position().left + newWidth*leftRatio, 0), cont.width() - newWidth);
+  var newTop = Math.max(Math.min(map.position().top + newHeight*topRatio, 0), cont.height() - newHeight);
+  map.animate({
+    width: newWidth,
+    left: newLeft,
+    height: newHeight,
+    top: newTop
+  }, 200);
+  redrawIcons(true, newWidth, newHeight, newLeft, newTop);
+  zoomLevel--;
  });
+
+$(document).on('DOMMouseScroll mousewheel', '#map', function(evt) {
+  evt.preventDefault();
+  if (mouseWheeled) return;
+
+  if (evt.originalEvent.wheelDelta > 50) {
+
+    var map = $('#map');
+    if (zoomLevel == 8) return;
+    zoomLevel++;
+    $('#info_entry').hide();
+    var cont = $('#map-container');
+    var ratio = map.height() / map.width();
+    var leftRatio = (evt.pageX - cont.offset().left - map.position().left) / map.width();
+    var topRatio = (evt.pageY - cont.offset().top - map.position().top) / map.height();
+    var newHeight = map.height() * 2;
+    var newWidth = map.width() * 2;
+    var newLeft = map.position().left - map.width()*leftRatio;
+    var newTop = map.position().top - map.height()*topRatio;
+    map.animate({
+      width: newWidth,
+      left: newLeft,
+      height: newHeight,
+      top: newTop
+    }, 200);
+    redrawIcons(true, newWidth, newHeight, newLeft, newTop);
+    
+
+  } else if (evt.originalEvent.wheelDelta < -50) {
+
+    var map = $('#map');
+    if (zoomLevel == 1) return;
+    $('#info_entry').hide();
+    var cont = $('#map-container');
+    var ratio = map.height() / map.width();
+    var leftRatio = (cont.width() / 2 - map.position().left) / map.width();
+    var topRatio = (cont.height() / 2 - map.position().top) / map.height();
+    var newHeight = map.height() / 2;
+    var newWidth = map.width() / 2;
+    var newLeft = Math.max(Math.min(map.position().left + newWidth*leftRatio, 0), cont.width() - newWidth);
+    var newTop = Math.max(Math.min(map.position().top + newHeight*topRatio, 0), cont.height() - newHeight);
+    map.animate({
+      width: newWidth,
+      left: newLeft,
+      height: newHeight,
+      top: newTop
+    }, 200);
+    redrawIcons(true, newWidth, newHeight, newLeft, newTop);
+    zoomLevel--;
+  } else {
+    return;
+  }
+
+  mouseWheeled = true;
+  setTimeout(function() {
+    mouseWheeled = false;
+  }, 500);
+
+});
 
 $(document).on('mousedown', '#map', function(evt) {
   mouseMap = true;
@@ -511,6 +797,10 @@ $(document).on('mouseup', '#map', function(evt) {
   $('#info_entry').hide();
 });
 
+$(document).on('mouseup', 'body', function(evt) {
+  mouseMap = false;
+});
+
 $(document).on('change', '.keyitem input', function(evt) {
   var typ = $(this).attr('id').substring(2);
   if ($(this).is(':checked')) {
@@ -526,4 +816,5 @@ $(document).on('change', '.keyitem input', function(evt) {
     $('#' + typ).data('hidden', true);
 
   }
+  updateLocations();
 }); 
