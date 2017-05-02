@@ -231,7 +231,7 @@ $(document).on('mouseenter', '.placed', function(evt) {
   lo.css('box-shadow', '0 0 10px slategray');
   if (highlighted != lo.attr('id')) {
     highlighted = lo.attr('id');
-    $('#locations').scrollTop(lo.position().top);
+    $('#locations').scrollTop(lo.position().top + $('#locations').scrollTop());
   }
   
 
