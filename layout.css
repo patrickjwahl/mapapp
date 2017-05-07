@@ -106,6 +106,21 @@ input[type=button]:focus {
   text-align: center;
 }
 
+#saved-maps {
+  margin-left: 10%;
+  max-width: 80%;
+  margin-top: 50px;
+  text-align: center;
+  background-color: lightgrey;
+}
+
+.saved-map {
+  height: 240px;
+  width: 360px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
 .home-button {
   font-size: 20px;
   color: white;

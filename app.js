@@ -19,6 +19,7 @@ var locClicked = false;
 var checked = {};
 var highlighted = null;
 var mouseWheeled = false;
+var saveData = {};
 
 var icons = {
   "info": ["https://s13.postimg.org/rtyfxbsvr/info_icon.png", "Information"],
@@ -40,6 +41,17 @@ $(document).ready(function() {
   }
 });
 
+$(document).on('click', '#tb-save-button', function(evt) {
+  var newKey = $("#map").attr('src');
+  if (saveData[newKey] === undefined) {
+    saveData[newKey] = $(".mapicon");
+    $('#saved-map-images').append('<img src="' + newKey + '" class="saved-map">');
+  }
+  $(".mapicon").remove();
+  $('#mapapp').slideUp(500, function() {$('#welcome').slideDown(500);});
+  state = 0;
+});
+
 $(document).on('click', '#new-button, #tb-new-button', function(evt) {
   $('#imgup').trigger('click');
 });
@@ -47,6 +59,16 @@ $(document).on('click', '#new-button, #tb-new-button', function(evt) {
 $(document).on('click', '#load-button', function(evt) {
   $('#welcome').slideUp(500, function() {$('#mapapp').slideDown(500);});
   state = 1;
+});
+
+$(document).on('click', '.saved-map', function(evt) {
+  $('#welcome').slideUp(500, function() {$('#mapapp').slideDown(500);});
+  state = 1;
+  $('#map').attr('src', $(this).attr('src'));
+  var cont = $('#map-container');
+  for (icon in saveData[$(this).attr('src')]) {
+    cont.append(icon);
+  }
 });
 
 $(document).on('change', '#imgup', function(evt) {
